@@ -7,11 +7,15 @@ group 'org.example'
 version ''
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.73'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
 }
 
 jar {
