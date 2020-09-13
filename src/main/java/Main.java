@@ -14,7 +14,7 @@ public class Main {
     static boolean typeCorrect(String type){
         return "PushEvent".equals(type)||"IssueCommentEvent".equals(type)||"IssuesEvent".equals(type)||"PullRequestEvent".equals(type);
     }
-    public static void main(String[] args) {
+    static void init(){
         File file = new File("src/main/java/2015-01-01.json");
         try {
             LineIterator it = FileUtils.lineIterator(file,"UTF-8");
@@ -54,5 +54,23 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    static int getPersonalThings(String username,String type){
+        Result result = userToResult.get(username);
+        return result==null?0:result.getAttribute(type);
+    }
+    static int getRepoThings(String repoName,String type){
+        Result result = repoToResult.get(repoName);
+        return result==null?0:result.getAttribute(type);
+    }
+    static int getPersonalAndRepoThings(String username,String repoName,String type){
+        Result result = userAndRepoToResult.get(username+"_"+repoName);
+        return result==null?0:result.getAttribute(type);
+    }
+    public static void main(String[] args) {
+        init();
+        System.out.println(getPersonalThings("tschortsch","PushEvent"));
+        System.out.println(getRepoThings("fujimura/hi","PushEvent"));
+        System.out.println(getPersonalAndRepoThings("tschortsch","tschortsch/gulp-bootlint","PushEvent"));
     }
 }

@@ -34,4 +34,16 @@ public class Result {
                 ", pullRequestEventNum=" + pullRequestEventNum +
                 '}';
     }
+
+    public int getAttribute(String type) {
+        if("PushEvent".equals(type)){
+            return this.pushEventNum;
+        }else if("IssueCommentEvent".equals(type)){
+            return this.issueCommentEventNum;
+        }else if("IssuesEvent".equals(type)){
+            return this.issuesEventNum;
+        }else {
+            return this.pullRequestEventNum;
+        }
+    }
 }
