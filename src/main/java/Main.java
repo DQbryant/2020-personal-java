@@ -16,45 +16,49 @@ public class Main {
     static boolean typeCorrect(String type){
         return "PushEvent".equals(type)||"IssueCommentEvent".equals(type)||"IssuesEvent".equals(type)||"PullRequestEvent".equals(type);
     }
-    static void init(String filePath){
-        File file = new File(filePath);
-        try {
-            LineIterator it = FileUtils.lineIterator(file,"UTF-8");
-            while (it.hasNext()){
-                JSONObject jsonObject = JSONObject.parseObject(it.nextLine());
-                String type = jsonObject.getString("type");
-                if(typeCorrect(type)){
-                    String username = jsonObject.getJSONObject("actor").getString("login");
-                    Result userResult = userToResult.get(username);
-                    if(userResult==null) {
-                        userResult = new Result();
-                        userResult.inc(type);
-                        userToResult.put(username,userResult);
-                    }else {
-                        userResult.inc(type);
-                    }
-                    String repoName = jsonObject.getJSONObject("repo").getString("name");
-                    Result repoResult = repoToResult.get(repoName);
-                    if(repoResult==null) {
-                        repoResult = new Result();
-                        repoResult.inc(type);
-                        repoToResult.put(repoName,repoResult);
-                    }else {
-                        repoResult.inc(type);
-                    }
-                    String name = username+"_"+repoName;
-                    Result result = userAndRepoToResult.get(name);
-                    if(result==null) {
-                        result = new Result();
-                        result.inc(type);
-                        userAndRepoToResult.put(name,result);
-                    }else {
-                        result.inc(type);
+    static void init(String path){
+        File file = new File(path);
+        String[] fileNames = file.list();
+        for(String fileName:fileNames){
+            System.out.println(fileName);
+            try {
+                LineIterator it = FileUtils.lineIterator(new File(path+"/"+fileName),"UTF-8");
+                while (it.hasNext()){
+                    JSONObject jsonObject = JSONObject.parseObject(it.nextLine());
+                    String type = jsonObject.getString("type");
+                    if(typeCorrect(type)){
+                        String username = jsonObject.getJSONObject("actor").getString("login");
+                        Result userResult = userToResult.get(username);
+                        if(userResult==null) {
+                            userResult = new Result();
+                            userResult.inc(type);
+                            userToResult.put(username,userResult);
+                        }else {
+                            userResult.inc(type);
+                        }
+                        String repoName = jsonObject.getJSONObject("repo").getString("name");
+                        Result repoResult = repoToResult.get(repoName);
+                        if(repoResult==null) {
+                            repoResult = new Result();
+                            repoResult.inc(type);
+                            repoToResult.put(repoName,repoResult);
+                        }else {
+                            repoResult.inc(type);
+                        }
+                        String name = username+"_"+repoName;
+                        Result result = userAndRepoToResult.get(name);
+                        if(result==null) {
+                            result = new Result();
+                            result.inc(type);
+                            userAndRepoToResult.put(name,result);
+                        }else {
+                            result.inc(type);
+                        }
                     }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
     static int getPersonalThings(String username,String type){
