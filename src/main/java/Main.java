@@ -1,6 +1,8 @@
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +16,8 @@ public class Main {
     static boolean typeCorrect(String type){
         return "PushEvent".equals(type)||"IssueCommentEvent".equals(type)||"IssuesEvent".equals(type)||"PullRequestEvent".equals(type);
     }
-    static void init(){
-        File file = new File("src/main/java/2015-01-01.json");
+    static void init(String filePath){
+        File file = new File(filePath);
         try {
             LineIterator it = FileUtils.lineIterator(file,"UTF-8");
             while (it.hasNext()){
@@ -68,9 +70,35 @@ public class Main {
         return result==null?0:result.getAttribute(type);
     }
     public static void main(String[] args) {
-        init();
-        System.out.println(getPersonalThings("tschortsch","PushEvent"));
-        System.out.println(getRepoThings("fujimura/hi","PushEvent"));
-        System.out.println(getPersonalAndRepoThings("tschortsch","tschortsch/gulp-bootlint","PushEvent"));
+        Options options = new Options();
+        options.addOption("i","init",true,"pathToData")
+                .addOption("u","user",true,"username")
+                .addOption("e","event",true,"eventType")
+                .addOption("r","repo",true,"repoName");
+        CommandLineParser parser = new DefaultParser();
+        try {
+            CommandLine cmd = parser.parse( options, args);
+            if(cmd.hasOption('i')){
+                init(cmd.getOptionValue('i'));
+            }else {
+                String eventType = cmd.getOptionValue('e');
+                if(eventType!=null) {
+                    if (cmd.hasOption('u')) {
+                        String username = cmd.getOptionValue('u');
+                        if (cmd.hasOption('r')) {
+                            String repoName = cmd.getOptionValue('r');
+                            System.out.println(getPersonalAndRepoThings(username,repoName,eventType));
+                        } else {
+                            System.out.println(getPersonalThings(username,eventType));
+                        }
+                    } else {
+                        String repoName = cmd.getOptionValue('r');
+                        System.out.println(getRepoThings(repoName,eventType));
+                    }
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }
