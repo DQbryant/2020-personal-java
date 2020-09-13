@@ -6,7 +6,9 @@ import org.apache.commons.io.LineIterator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
@@ -20,7 +22,6 @@ public class Main {
         File file = new File(path);
         String[] fileNames = file.list();
         for(String fileName:fileNames){
-            System.out.println(fileName);
             try {
                 LineIterator it = FileUtils.lineIterator(new File(path+"/"+fileName),"UTF-8");
                 while (it.hasNext()){
@@ -83,7 +84,26 @@ public class Main {
         try {
             CommandLine cmd = parser.parse( options, args);
             if(cmd.hasOption('i')){
-                init(cmd.getOptionValue('i'));
+                String path = cmd.getOptionValue('i');
+                File file = new File(path);
+//                init(path);
+                List<String> fileNames = Arrays.asList(file.list());
+                FileHandleThread fileHandleThread1 = new FileHandleThread(userToResult,repoToResult,userAndRepoToResult,fileNames,path,0);
+                FileHandleThread fileHandleThread2 = new FileHandleThread(userToResult,repoToResult,userAndRepoToResult,fileNames,path,1);
+                FileHandleThread fileHandleThread3 = new FileHandleThread(userToResult,repoToResult,userAndRepoToResult,fileNames,path,2);
+                Thread thread = new Thread(fileHandleThread1);
+                Thread thread1 = new Thread(fileHandleThread2);
+                Thread thread2 = new Thread(fileHandleThread3);
+                thread.start();
+                thread1.start();
+                thread2.start();
+                try {
+                    thread.join();
+                    thread1.join();
+                    thread2.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }else {
                 String eventType = cmd.getOptionValue('e');
                 if(eventType!=null) {

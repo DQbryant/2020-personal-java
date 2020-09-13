@@ -14,7 +14,7 @@ public class Result {
     private int issueCommentEventNum;
     private int issuesEventNum;
     private int pullRequestEventNum;
-    public void inc(String type){
+    public synchronized void inc(String type){
         if("PushEvent".equals(type)){
             this.pushEventNum++;
         }else if("IssueCommentEvent".equals(type)){
