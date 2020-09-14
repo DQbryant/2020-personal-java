@@ -1,7 +1,11 @@
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.cli.*;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,16 +15,19 @@ public class Main {
     static Map<String,Result> userToResult = new ConcurrentHashMap<>();
     static Map<String,Result> repoToResult = new ConcurrentHashMap<>();
     static Map<String,Result> userAndRepoToResult = new ConcurrentHashMap<>();
-    static int getPersonalThings(String username,String type){
-        Result result = userToResult.get(username);
+    static int getPersonalThings(String username,String type) throws IOException {
+        JSONObject jsonObject = JSONObject.parseObject(FileUtils.readFileToString(new File("userToResult.json"),"UTF-8"));
+        Result result = jsonObject.getObject(username,Result.class);
         return result==null?0:result.getAttribute(type);
     }
-    static int getRepoThings(String repoName,String type){
-        Result result = repoToResult.get(repoName);
+    static int getRepoThings(String repoName,String type) throws IOException {
+        JSONObject jsonObject = JSONObject.parseObject(FileUtils.readFileToString(new File("repoToResult.json"),"UTF-8"));
+        Result result = jsonObject.getObject(repoName,Result.class);
         return result==null?0:result.getAttribute(type);
     }
-    static int getPersonalAndRepoThings(String username,String repoName,String type){
-        Result result = userAndRepoToResult.get(username+"_"+repoName);
+    static int getPersonalAndRepoThings(String username,String repoName,String type) throws IOException {
+        JSONObject jsonObject = JSONObject.parseObject(FileUtils.readFileToString(new File("userAndRepoToResult.json"),"UTF-8"));
+        Result result = jsonObject.getObject(username+"_"+repoName,Result.class);
         return result==null?0:result.getAttribute(type);
     }
     public static void main(String[] args) {
@@ -46,13 +53,12 @@ public class Main {
                 thread.start();
                 thread1.start();
                 thread2.start();
-                try {
-                    thread.join();
-                    thread1.join();
-                    thread2.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                thread.join();
+                thread1.join();
+                thread2.join();
+                FileUtils.writeStringToFile(new File("userToResult.json"), JSON.toJSONString(userToResult),"UTF-8",false);
+                FileUtils.writeStringToFile(new File("repoToResult.json"), JSON.toJSONString(repoToResult),"UTF-8",false);
+                FileUtils.writeStringToFile(new File("userAndRepoToResult.json"), JSON.toJSONString(userAndRepoToResult),"UTF-8",false);
             }else {
                 String eventType = cmd.getOptionValue('e');
                 if(eventType!=null) {
@@ -70,7 +76,7 @@ public class Main {
                     }
                 }
             }
-        } catch (ParseException e) {
+        } catch (ParseException | InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }

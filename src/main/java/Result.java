@@ -2,14 +2,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author dqbryant
  * @create 2020/9/10 22:12
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class Result {
+public class Result implements Serializable {
     private int pushEventNum;
     private int issueCommentEventNum;
     private int issuesEventNum;
@@ -45,5 +44,47 @@ public class Result {
         }else {
             return this.pullRequestEventNum;
         }
+    }
+
+    public Result() {
+    }
+
+    public Result(int pushEventNum, int issueCommentEventNum, int issuesEventNum, int pullRequestEventNum) {
+        this.pushEventNum = pushEventNum;
+        this.issueCommentEventNum = issueCommentEventNum;
+        this.issuesEventNum = issuesEventNum;
+        this.pullRequestEventNum = pullRequestEventNum;
+    }
+
+    public int getPushEventNum() {
+        return pushEventNum;
+    }
+
+    public void setPushEventNum(int pushEventNum) {
+        this.pushEventNum = pushEventNum;
+    }
+
+    public int getIssueCommentEventNum() {
+        return issueCommentEventNum;
+    }
+
+    public void setIssueCommentEventNum(int issueCommentEventNum) {
+        this.issueCommentEventNum = issueCommentEventNum;
+    }
+
+    public int getIssuesEventNum() {
+        return issuesEventNum;
+    }
+
+    public void setIssuesEventNum(int issuesEventNum) {
+        this.issuesEventNum = issuesEventNum;
+    }
+
+    public int getPullRequestEventNum() {
+        return pullRequestEventNum;
+    }
+
+    public void setPullRequestEventNum(int pullRequestEventNum) {
+        this.pullRequestEventNum = pullRequestEventNum;
     }
 }

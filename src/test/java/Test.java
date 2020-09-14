@@ -16,7 +16,6 @@ public class Test {
      */
     @org.junit.Test
     public void testGetPersonalThings(){
-        Main.main(new String[]{"--init","D:\\json"});
         Main.main(new String[]{"-u","tschortsch","-e","PushEvent"});
     }
 
@@ -26,7 +25,6 @@ public class Test {
      */
     @org.junit.Test
     public void testGetRepoThings(){
-        Main.main(new String[]{"--init","D:\\json"});
         Main.main(new String[]{"-r","fujimura/hi","-e","PushEvent"});
     }
 
@@ -36,7 +34,6 @@ public class Test {
      */
     @org.junit.Test
     public void testGetPersonalAndRepoThings(){
-        Main.main(new String[]{"--init","D:\\json"});
         Main.main(new String[]{"-r","tschortsch/gulp-bootlint","-u","tschortsch","-e","PushEvent"});
     }
 

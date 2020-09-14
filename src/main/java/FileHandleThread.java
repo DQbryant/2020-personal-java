@@ -13,9 +13,9 @@ import java.util.Map;
  * @create 2020/9/13 21:10
  */
 public class FileHandleThread implements Runnable{
-    private Map<String,Result> userToResult = new HashMap<>();
-    private Map<String,Result> repoToResult = new HashMap<>();
-    private Map<String,Result> userAndRepoToResult = new HashMap<>();
+    private Map<String,Result> userToResult;
+    private Map<String,Result> repoToResult;
+    private Map<String,Result> userAndRepoToResult;
     private List<String> fileNames;
     private String path;
     private int num;
