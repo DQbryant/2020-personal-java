@@ -75,6 +75,37 @@ public class Main {
     }
 
     /**
+     * 初始化方法
+     * @param path 传入的文件夹路径
+     */
+    static void init(String path){
+        try {
+            File file = new File(path);
+            //获得文件夹中的文件名的集合
+            List<String> fileNames = Arrays.asList(Objects.requireNonNull(file.list()));
+            ///创建三个线程共同解析文件夹中的json文件
+            FileHandleThread fileHandleThread1 = new FileHandleThread(userToResult,repoToResult,userAndRepoToResult,fileNames,path,0);
+            FileHandleThread fileHandleThread2 = new FileHandleThread(userToResult,repoToResult,userAndRepoToResult,fileNames,path,1);
+            FileHandleThread fileHandleThread3 = new FileHandleThread(userToResult,repoToResult,userAndRepoToResult,fileNames,path,2);
+            Thread thread = new Thread(fileHandleThread1);
+            Thread thread1 = new Thread(fileHandleThread2);
+            Thread thread2 = new Thread(fileHandleThread3);
+            thread.start();
+            thread1.start();
+            thread2.start();
+            thread.join();
+            thread1.join();
+            thread2.join();
+            //将三个map中的数据存入各自的json文件中,实现持久化
+            FileUtils.writeStringToFile(new File("userToResult.json"), JSON.toJSONString(userToResult),"UTF-8",false);
+            FileUtils.writeStringToFile(new File("repoToResult.json"), JSON.toJSONString(repoToResult),"UTF-8",false);
+            FileUtils.writeStringToFile(new File("userAndRepoToResult.json"), JSON.toJSONString(userAndRepoToResult),"UTF-8",false);
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    /**
      * 主函数
      * @param args 用于用户传参
      */
@@ -91,27 +122,7 @@ public class Main {
             //如果参数中存在-i说明是初始化操作
             if(cmd.hasOption('i')){
                 String path = cmd.getOptionValue('i');
-                File file = new File(path);
-//                init(path);单线程初始化方法,已删除
-                //获得文件夹中的文件名的集合
-                List<String> fileNames = Arrays.asList(Objects.requireNonNull(file.list()));
-                ///创建三个线程共同解析文件夹中的json文件
-                FileHandleThread fileHandleThread1 = new FileHandleThread(userToResult,repoToResult,userAndRepoToResult,fileNames,path,0);
-                FileHandleThread fileHandleThread2 = new FileHandleThread(userToResult,repoToResult,userAndRepoToResult,fileNames,path,1);
-                FileHandleThread fileHandleThread3 = new FileHandleThread(userToResult,repoToResult,userAndRepoToResult,fileNames,path,2);
-                Thread thread = new Thread(fileHandleThread1);
-                Thread thread1 = new Thread(fileHandleThread2);
-                Thread thread2 = new Thread(fileHandleThread3);
-                thread.start();
-                thread1.start();
-                thread2.start();
-                thread.join();
-                thread1.join();
-                thread2.join();
-                //将三个map中的数据存入各自的json文件中,实现持久化
-                FileUtils.writeStringToFile(new File("userToResult.json"), JSON.toJSONString(userToResult),"UTF-8",false);
-                FileUtils.writeStringToFile(new File("repoToResult.json"), JSON.toJSONString(repoToResult),"UTF-8",false);
-                FileUtils.writeStringToFile(new File("userAndRepoToResult.json"), JSON.toJSONString(userAndRepoToResult),"UTF-8",false);
+                init(path);
             }else {//参数中未存在i说明是查询操作
                 String eventType = cmd.getOptionValue('e');
                 if(eventType!=null) {
@@ -131,7 +142,7 @@ public class Main {
                     }
                 }
             }
-        } catch (ParseException | InterruptedException | IOException e) {
+        } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
     }
