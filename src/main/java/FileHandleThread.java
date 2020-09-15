@@ -52,7 +52,7 @@ public class FileHandleThread implements Runnable{
      * @return 符合返回true
      */
     boolean typeCorrect(String type){
-        return "PushEvent".equals(type)||"IssueCommentEvent".equals(type)||"IssuesEvent".equals(type)||"PullRequestEvent".equals(type);
+        return "PushEvent".equals(type) || "IssueCommentEvent".equals(type) || "IssuesEvent".equals(type) || "PullRequestEvent".equals(type);
     }
 
     /**
@@ -60,52 +60,57 @@ public class FileHandleThread implements Runnable{
      */
     @Override
     public void run() {
-        while(num<fileNum){
+        while(num < fileNum){
             try {
-                //获得文件的行迭代器，可以逐行读取文件
-                LineIterator it = FileUtils.lineIterator(new File(path+"/"+fileNames.get(num)),"UTF-8");
-                //如果文件还未读完
-                while (it.hasNext()){
-                    //解析当前迭代器的一行，迭代器自动往下移动一行
-                    JSONObject jsonObject = JSONObject.parseObject(it.nextLine());
-                    //获得json的type属性
-                    String type = jsonObject.getString("type");
-                    //事件类型应该是四种事件中的一种
-                    if(typeCorrect(type)){
-                        //获得actor的login属性
-                        String username = jsonObject.getJSONObject("actor").getString("login");
-                        Result userResult = userToResult.get(username);
-                        //先要判断集合中该用户的结果对象是否有被创建
-                        if(userResult==null) {
-                            //没有创建需要创建
-                            userResult = new Result();
-                            //增加该结果对象的对应事件的数量
-                            userResult.inc(type);
-                            //将新创建的对象放回map中
-                            userToResult.put(username,userResult);
-                        }else {
-                            //如果集合中已经存在了该用户的对象,直接增加该结果对象的对应事件的数量即可
-                            userResult.inc(type);
-                        }
-                        //同上,只是map的键变成了项目名repoName
-                        String repoName = jsonObject.getJSONObject("repo").getString("name");
-                        Result repoResult = repoToResult.get(repoName);
-                        if(repoResult==null) {
-                            repoResult = new Result();
-                            repoResult.inc(type);
-                            repoToResult.put(repoName,repoResult);
-                        }else {
-                            repoResult.inc(type);
-                        }
-                        //同上,只是map的键变成了用户名+项目名
-                        String name = username+"_"+repoName;
-                        Result result = userAndRepoToResult.get(name);
-                        if(result==null) {
-                            result = new Result();
-                            result.inc(type);
-                            userAndRepoToResult.put(name,result);
-                        }else {
-                            result.inc(type);
+                //获得本次解析的文件名
+                String fileName = fileNames.get(num);
+                //得是json文件才能被解析
+                if(fileName.endsWith(".json")) {
+                    //获得文件的行迭代器，可以逐行读取文件
+                    LineIterator it = FileUtils.lineIterator(new File(path + "/" + fileName), "UTF-8");
+                    //如果行迭代器还未到文件结尾
+                    while (it.hasNext()) {
+                        //解析当前迭代器的一行，迭代器自动往下移动一行
+                        JSONObject jsonObject = JSONObject.parseObject(it.nextLine());
+                        //获得json的type属性
+                        String type = jsonObject.getString("type");
+                        //事件类型应该是四种事件中的一种
+                        if (typeCorrect(type)) {
+                            //获得actor的login属性
+                            String username = jsonObject.getJSONObject("actor").getString("login");
+                            Result userResult = userToResult.get(username);
+                            //先要判断集合中该用户的结果对象是否有被创建
+                            if (userResult == null) {
+                                //没有创建需要创建
+                                userResult = new Result();
+                                //增加该结果对象的对应事件的数量
+                                userResult.inc(type);
+                                //将新创建的对象放回map中
+                                userToResult.put(username, userResult);
+                            } else {
+                                //如果集合中已经存在了该用户的对象,直接增加该结果对象的对应事件的数量即可
+                                userResult.inc(type);
+                            }
+                            //同上,只是map的键变成了项目名repoName
+                            String repoName = jsonObject.getJSONObject("repo").getString("name");
+                            Result repoResult = repoToResult.get(repoName);
+                            if (repoResult == null) {
+                                repoResult = new Result();
+                                repoResult.inc(type);
+                                repoToResult.put(repoName, repoResult);
+                            } else {
+                                repoResult.inc(type);
+                            }
+                            //同上,只是map的键变成了用户名+项目名
+                            String name = username + "_" + repoName;
+                            Result result = userAndRepoToResult.get(name);
+                            if (result == null) {
+                                result = new Result();
+                                result.inc(type);
+                                userAndRepoToResult.put(name, result);
+                            } else {
+                                result.inc(type);
+                            }
                         }
                     }
                 }

@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * @author dqbryant
  */
@@ -13,19 +15,24 @@ public class Test {
     /**
      * 测试 getPersonalThings
      * "-u","tschortsch","-e","PushEvent",输出是30
+     * @throws IOException
      */
     @org.junit.Test
-    public void testGetPersonalThings(){
-        Main.main(new String[]{"-u","tschortsch","-e","PushEvent"});
+    public void testGetPersonalThings() throws IOException {
+        int num = Main.getPersonalThings("tschortsch","PushEvent");
+        assert num == 30;
     }
 
     /**
      * 测试 getRepoThings
      * "-r","fujimura/hi","-e","PushEvent",输出是27
      */
+
+
     @org.junit.Test
-    public void testGetRepoThings(){
-        Main.main(new String[]{"-r","fujimura/hi","-e","PushEvent"});
+    public void testGetRepoThings() throws IOException {
+        int num = Main.getRepoThings("fujimura/hi","PushEvent");
+        assert num == 27;
     }
 
     /**
@@ -33,8 +40,9 @@ public class Test {
      * "-r","tschortsch/gulp-bootlint","-u","tschortsch","-e","PushEvent",输出是21
      */
     @org.junit.Test
-    public void testGetPersonalAndRepoThings(){
-        Main.main(new String[]{"-r","tschortsch/gulp-bootlint","-u","tschortsch","-e","PushEvent"});
+    public void testGetPersonalAndRepoThings() throws IOException {
+        int num = Main.getPersonalAndRepoThings("tschortsch","tschortsch/gulp-bootlint","PushEvent");
+        assert num == 21;
     }
 
     /**

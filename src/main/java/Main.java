@@ -44,7 +44,7 @@ public class Main {
         //从json中解析出结果对象
         Result result = jsonObject.getObject(username,Result.class);
         //注意防范结果不存在的空指针异常
-        return result==null?0:result.getAttribute(type);
+        return result == null ? 0 : result.getAttribute(type);
     }
 
     /**
@@ -57,7 +57,7 @@ public class Main {
     static int getRepoThings(String repoName,String type) throws IOException {
         JSONObject jsonObject = JSONObject.parseObject(FileUtils.readFileToString(new File("repoToResult.json"),"UTF-8"));
         Result result = jsonObject.getObject(repoName,Result.class);
-        return result==null?0:result.getAttribute(type);
+        return result == null ? 0 : result.getAttribute(type);
     }
 
     /**
@@ -71,7 +71,7 @@ public class Main {
     static int getPersonalAndRepoThings(String username,String repoName,String type) throws IOException {
         JSONObject jsonObject = JSONObject.parseObject(FileUtils.readFileToString(new File("userAndRepoToResult.json"),"UTF-8"));
         Result result = jsonObject.getObject(username+"_"+repoName,Result.class);
-        return result==null?0:result.getAttribute(type);
+        return result == null ? 0 : result.getAttribute(type);
     }
 
     /**
