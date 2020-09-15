@@ -51,7 +51,7 @@ public class FileHandleThread implements Runnable{
      * @param type 事件类型
      * @return 符合返回true
      */
-    boolean typeCorrect(String type){
+    public static boolean typeCorrect(String type){
         return "PushEvent".equals(type) || "IssueCommentEvent".equals(type) || "IssuesEvent".equals(type) || "PullRequestEvent".equals(type);
     }
 
