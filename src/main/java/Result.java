@@ -1,18 +1,22 @@
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 /**
  * @author dqbryant
- * @create 2020/9/10 22:12
  */
+@SuppressWarnings("all")
 public class Result implements Serializable {
+    /**
+     * 四种事件类型的数量
+     */
     private int pushEventNum;
     private int issueCommentEventNum;
     private int issuesEventNum;
     private int pullRequestEventNum;
+    /**
+     * 根据事件类型增加对应的事件的数量
+     * @param type 事件类型
+     */
     public synchronized void inc(String type){
         if("PushEvent".equals(type)){
             this.pushEventNum++;
@@ -34,6 +38,11 @@ public class Result implements Serializable {
                 '}';
     }
 
+    /**
+     * 根据事件类型返回对应的事件的数量
+     * @param type 事件类型
+     * @return 对应的事件的数量
+     */
     public int getAttribute(String type) {
         if("PushEvent".equals(type)){
             return this.pushEventNum;
